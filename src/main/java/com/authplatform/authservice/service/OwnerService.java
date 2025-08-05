@@ -55,7 +55,7 @@ public class OwnerService {
         String verificationToken = jwtService.generateEmailVerificationToken(savedOwner.getEmail());
 
         // Gửi email với link trỏ về backend của chúng ta
-        String verificationLink = "http://localhost:8080/api/platform/auth/verify-email?token=" + verificationToken;
+        String verificationLink = "https://auth-service-platform.onrender.com/api/platform/auth/verify-email?token=" + verificationToken;
         String emailBody = "<h1>Cảm ơn bạn đã đăng ký!</h1>"
                 + "<p>Vui lòng nhấp vào link sau để xác thực tài khoản của bạn (link có hiệu lực trong 15 phút):</p>"
                 + "<a href=\"" + verificationLink + "\">Xác thực tài khoản</a>";

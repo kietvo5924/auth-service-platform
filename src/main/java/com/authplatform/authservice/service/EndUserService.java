@@ -68,7 +68,7 @@ public class EndUserService {
         String verificationToken = jwtService.generateEmailVerificationToken(savedUser.getEmail());
 
         String verificationLink = String.format(
-                "http://localhost:8080/api/p/%s/auth/verify-email?token=%s",
+                "https://auth-service-platform.onrender.com/api/p/%s/auth/verify-email?token=%s",
                 apiKey,
                 verificationToken
         );

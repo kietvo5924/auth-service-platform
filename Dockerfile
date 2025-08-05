@@ -6,6 +6,11 @@ WORKDIR /app
 # Sao chép các file cần thiết để tải dependency trước
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
+
+# --- DÒNG MỚI ĐƯỢC THÊM VÀO ---
+# Cấp quyền thực thi cho file mvnw
+RUN chmod +x ./mvnw
+
 # Tối ưu hóa bằng cách tải dependency trước, tận dụng cache của Docker
 RUN ./mvnw dependency:go-offline
 

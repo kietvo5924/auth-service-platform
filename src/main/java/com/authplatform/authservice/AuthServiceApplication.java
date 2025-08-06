@@ -9,7 +9,7 @@ public class AuthServiceApplication {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(AuthServiceApplication.class)
-                .properties("spring.config.additional-location=classpath:application-secrets.properties")
+                .properties("spring.config.additional-location=optional:classpath:application-secrets.properties")
                 .run(args);
     }
 

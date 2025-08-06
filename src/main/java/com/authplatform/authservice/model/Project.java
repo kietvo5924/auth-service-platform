@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -33,6 +35,11 @@ public class Project {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "project_allowed_origins", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "origin")
+    private List<String> allowedOrigins = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;

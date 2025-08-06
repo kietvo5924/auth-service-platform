@@ -56,4 +56,13 @@ public class EndUserAuthController {
         endUserService.resetPassword(apiKey, request);
         return ResponseEntity.ok(new ApiResponse(true, "Password has been reset successfully."));
     }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<TokenValidationResponse> validateToken(@PathVariable String apiKey, @Valid @RequestBody TokenValidationRequest request) {
+        TokenValidationResponse response = endUserService.validateToken(apiKey, request.getToken());
+        if (!response.isValid()) {
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseEntity.ok(response);
+    }
 }

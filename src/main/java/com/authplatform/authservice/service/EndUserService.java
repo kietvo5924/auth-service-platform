@@ -281,6 +281,34 @@ public class EndUserService {
         endUserRepository.save(endUser);
     }
 
+    // Xác thực token
+    public TokenValidationResponse validateToken(String apiKey, String token) {
+        Project project = projectRepository.findByApiKey(apiKey).orElseThrow(() -> new ProjectNotFoundException("Project not found."));
+
+        try {
+            String audience = jwtService.extractAudience(token);
+            if (audience == null || !audience.equals("END_USER_PROJECT:" + project.getId())) {
+                return TokenValidationResponse.builder().valid(false).build();
+            }
+
+            String email = jwtService.extractUsername(token);
+            EndUser endUser = endUserRepository.findByEmailAndProject(email, project).orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+            if (jwtService.isEndUserLoginTokenValid(token, endUser) && endUser.isEnabled() && !endUser.isLocked()) {
+                return TokenValidationResponse.builder()
+                        .valid(true)
+                        .email(endUser.getEmail())
+                        .userId(endUser.getId())
+                        .roles(endUser.getRoles().stream().map(ProjectRole::getName).collect(Collectors.toSet()))
+                        .build();
+            }
+        } catch (Exception e) {
+            return TokenValidationResponse.builder().valid(false).build();
+        }
+
+        return TokenValidationResponse.builder().valid(false).build();
+    }
+
     // --- CÁC PHƯƠMNG THỨC HỖ TRỢ ---
 
     private EndUser findUserAndVerifyProject(Long projectId, Long endUserId) {

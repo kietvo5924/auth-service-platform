@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +39,7 @@ public class ProjectService {
                 .name(request.getName())
                 .owner(owner)
                 .apiKey(UUID.randomUUID().toString())
+                .allowedOrigins(request.getAllowedOrigins() != null ? request.getAllowedOrigins() : new ArrayList<>())
                 .build();
 
         Project savedProject = projectRepository.save(newProject);
@@ -62,6 +64,7 @@ public class ProjectService {
         }
 
         project.setName(request.getName());
+        project.setAllowedOrigins(request.getAllowedOrigins() != null ? request.getAllowedOrigins() : new ArrayList<>());
         Project updatedProject = projectRepository.save(project);
         return mapToProjectResponse(updatedProject);
     }
@@ -80,6 +83,7 @@ public class ProjectService {
         response.setId(project.getId());
         response.setName(project.getName());
         response.setApiKey(project.getApiKey());
+        response.setAllowedOrigins(project.getAllowedOrigins());
         return response;
     }
 

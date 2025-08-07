@@ -30,6 +30,21 @@ public class ProjectService {
     private final OwnerRepository ownerRepository;
     private final ProjectRoleRepository projectRoleRepository;
 
+    public ProjectResponse getProjectByApiKey(String ownerEmail, String apiKey) {
+        Owner owner = ownerRepository.findByEmail(ownerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Owner not found"));
+
+        Project project = projectRepository.findByApiKey(apiKey)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with the given API key."));
+
+        // Kiểm tra bảo mật: đảm bảo project này thuộc về owner đang yêu cầu
+        if (!project.getOwner().getId().equals(owner.getId())) {
+            throw new AccessDeniedException("You do not have permission to access this project.");
+        }
+
+        return mapToProjectResponse(project);
+    }
+
     @Transactional
     public ProjectResponse createProject(String ownerEmail, CreateProjectRequest request) {
         Owner owner = ownerRepository.findByEmail(ownerEmail)

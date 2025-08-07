@@ -10,4 +10,5 @@ public class ProjectResponse {
     private String name;
     private String apiKey;
     private List<String> allowedOrigins;
+    private String projectSecret;
 }

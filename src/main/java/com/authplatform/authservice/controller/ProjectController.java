@@ -24,6 +24,16 @@ public class ProjectController {
     private final ProjectService projectService;
     private final EndUserService endUserService;
 
+    @GetMapping("/by-api-key")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ProjectResponse> getProjectByApiKey(
+            @RequestParam("key") String apiKey,
+            Principal principal
+    ) {
+        ProjectResponse project = projectService.getProjectByApiKey(principal.getName(), apiKey);
+        return ResponseEntity.ok(project);
+    }
+
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjectResponse> createProject(@Valid @RequestBody CreateProjectRequest request, Principal principal) {

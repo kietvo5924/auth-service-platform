@@ -1,6 +1,5 @@
 package com.authplatform.authservice.config;
 
-import com.authplatform.authservice.filter.ApiKeyAuthenticationFilter;
 import com.authplatform.authservice.filter.UnifiedJwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final UnifiedJwtFilter unifiedJwtFilter;
-    private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
     private final AuthenticationProvider ownerAuthenticationProvider;
 
     @Bean
@@ -40,8 +38,7 @@ public class SecurityConfig {
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(ownerAuthenticationProvider)
-                .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(unifiedJwtFilter, ApiKeyAuthenticationFilter.class);
+                .addFilterBefore(unifiedJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -32,9 +32,6 @@ public class Project {
     @Column(nullable = false, unique = true, updatable = false)
     private String apiKey;
 
-    @Column(nullable = false)
-    private String hashedProjectSecret;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;

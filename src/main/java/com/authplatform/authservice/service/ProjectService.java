@@ -33,19 +33,10 @@ public class ProjectService {
     private final ProjectRoleRepository projectRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ProjectResponse getProjectByApiKey(String ownerEmail, String apiKey) {
-        Owner owner = ownerRepository.findByEmail(ownerEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("Owner not found"));
-
+    public Long getProjectIdByApiKey(String apiKey) {
         Project project = projectRepository.findByApiKey(apiKey)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found with the given API key."));
-
-        // Kiểm tra bảo mật: đảm bảo project này thuộc về owner đang yêu cầu
-        if (!project.getOwner().getId().equals(owner.getId())) {
-            throw new AccessDeniedException("You do not have permission to access this project.");
-        }
-
-        return mapToProjectResponse(project);
+        return project.getId();
     }
 
     @Transactional
@@ -53,16 +44,11 @@ public class ProjectService {
         Owner owner = ownerRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Owner not found"));
 
-        String plainTextSecret = "sk_live" + RandomStringUtils.randomAlphanumeric(32);
-
-        String hashedSecret = passwordEncoder.encode(plainTextSecret);
-
         Project newProject = Project.builder()
                 .name(request.getName())
                 .owner(owner)
                 .apiKey(UUID.randomUUID().toString())
                 .allowedOrigins(request.getAllowedOrigins() != null ? request.getAllowedOrigins() : new ArrayList<>())
-                .hashedProjectSecret(hashedSecret)
                 .build();
 
         Project savedProject = projectRepository.save(newProject);
@@ -71,10 +57,7 @@ public class ProjectService {
         ProjectRole userRole = ProjectRole.builder().name("USER").project(savedProject).level(10).build();
         projectRoleRepository.saveAll(Arrays.asList(userRole, adminRole));
 
-        ProjectResponse response = mapToProjectResponse(newProject);
-        response.setProjectSecret(plainTextSecret);
-
-        return response;
+        return mapToProjectResponse(newProject);
     }
 
     @Transactional

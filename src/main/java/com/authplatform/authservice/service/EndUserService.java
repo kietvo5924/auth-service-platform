@@ -295,11 +295,18 @@ public class EndUserService {
             EndUser endUser = endUserRepository.findByEmailAndProject(email, project).orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
             if (jwtService.isEndUserLoginTokenValid(token, endUser) && endUser.isEnabled() && !endUser.isLocked()) {
+                // Tính toán cấp bậc cao nhất
+                int maxLevel = endUser.getRoles().stream()
+                        .mapToInt(ProjectRole::getLevel)
+                        .max()
+                        .orElse(0);
+
                 return TokenValidationResponse.builder()
                         .valid(true)
                         .email(endUser.getEmail())
                         .userId(endUser.getId())
                         .roles(endUser.getRoles().stream().map(ProjectRole::getName).collect(Collectors.toSet()))
+                        .maxRoleLevel(maxLevel)
                         .build();
             }
         } catch (Exception e) {

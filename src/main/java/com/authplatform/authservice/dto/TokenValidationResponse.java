@@ -12,4 +12,5 @@ public class TokenValidationResponse {
     private String email;
     private Long userId;
     private Set<String> roles;
+    private int maxRoleLevel;
 }

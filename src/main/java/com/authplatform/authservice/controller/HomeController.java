@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/public")
 @RequiredArgsConstructor
 public class HomeController {
 
@@ -21,12 +21,6 @@ public class HomeController {
     @GetMapping("/hello")
     public ResponseEntity<String> sayHello() {
         return ResponseEntity.ok("Hello from AuthService Backend! (Public API)");
-    }
-
-    @GetMapping("/hello2")
-    public ResponseEntity<String> sayHello(Principal principal) {
-        // Principal chứa thông tin người dùng đã được xác thực từ token
-        return ResponseEntity.ok("Xin chào, " + principal.getName() + "! Bạn đã truy cập thành công API được bảo vệ.");
     }
 
     @GetMapping("/projects/resolve")

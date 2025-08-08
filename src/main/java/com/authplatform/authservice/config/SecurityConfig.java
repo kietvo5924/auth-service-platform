@@ -31,7 +31,7 @@ public class SecurityConfig {
 
                 // Cấu hình quy tắc cho các request
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/platform/auth/**", "/api/p/**", "/api/hello").permitAll()
+                        .requestMatchers("/api/platform/auth/**", "/api/p/**", "/api/public").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         .anyRequest().authenticated()

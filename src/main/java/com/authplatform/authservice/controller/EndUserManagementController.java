@@ -54,6 +54,16 @@ public class EndUserManagementController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    @GetMapping("/{endUserId}")
+    @PreAuthorize("@permissionService.canManageProject(authentication, #projectId)")
+    public ResponseEntity<EndUserResponse> getEndUserById(
+            @PathVariable Long projectId,
+            @PathVariable Long endUserId
+    ) {
+        EndUserResponse endUser = endUserService.getEndUserById(projectId, endUserId);
+        return ResponseEntity.ok(endUser);
+    }
+
     // Khóa tài khoản
     @PostMapping("/{endUserId}/lock")
     @PreAuthorize("@permissionService.canManageProject(authentication, #projectId)")

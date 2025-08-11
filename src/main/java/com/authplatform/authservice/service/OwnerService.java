@@ -1,9 +1,6 @@
 package com.authplatform.authservice.service;
 
-import com.authplatform.authservice.dto.OwnerResponse;
-import com.authplatform.authservice.dto.RegisterOwnerRequest;
-import com.authplatform.authservice.dto.ResetPasswordRequest;
-import com.authplatform.authservice.dto.UpdateOwnerRequest;
+import com.authplatform.authservice.dto.*;
 import com.authplatform.authservice.exception.EmailAlreadyExistsException;
 import com.authplatform.authservice.exception.InvalidTokenException;
 import com.authplatform.authservice.model.Owner;
@@ -134,6 +131,24 @@ public class OwnerService {
         return ownerRepository.findAll().stream()
                 .map(this::mapToOwnerResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateOwnerRole(Long currentAdminId, Long targetOwnerId, UpdateOwnerRoleRequest request) {
+        if (currentAdminId.equals(targetOwnerId)) {
+            throw new IllegalArgumentException("Admins cannot change their own role.");
+        }
+
+        Owner targetOwner = ownerRepository.findById(targetOwnerId)
+                .orElseThrow(() -> new UsernameNotFoundException("Target owner not found with id: " + targetOwnerId));
+
+        try {
+            Role newRole = Role.valueOf(request.getRole()); // Chuyển String thành Enum
+            targetOwner.setRole(newRole);
+            ownerRepository.save(targetOwner);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role provided. Must be ROLE_USER or ROLE_ADMIN.");
+        }
     }
 
     // Owner tự cập nhật thông tin

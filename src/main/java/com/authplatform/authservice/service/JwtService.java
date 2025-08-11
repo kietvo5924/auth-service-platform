@@ -63,10 +63,14 @@ public class JwtService {
     }
 
     // --- TẠO TOKEN ĐĂNG NHẬP ---
-    public String generateOwnerLoginToken(String username) {
+    public String generateOwnerLoginToken(Owner owner) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("aud", "OWNER_PLATFORM");
+        claims.put("role", owner.getRole().name());
+
         return Jwts.builder()
-                .subject(username)
-                .audience().add("OWNER_PLATFORM").and()
+                .claims(claims)
+                .subject(owner.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey())

@@ -1,6 +1,7 @@
 package com.authplatform.authservice.controller;
 
 import com.authplatform.authservice.dto.*;
+import com.authplatform.authservice.model.Owner;
 import com.authplatform.authservice.service.JwtService;
 import com.authplatform.authservice.service.OwnerService;
 import jakarta.validation.Valid;
@@ -46,8 +47,8 @@ public class AuthController {
                 )
         );
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtService.generateOwnerLoginToken(userDetails.getUsername());
+        Owner ownerDetails = (Owner) authentication.getPrincipal();
+        String token = jwtService.generateOwnerLoginToken(ownerDetails);
         return ResponseEntity.ok(AuthResponse.builder().accessToken(token).build());
     }
 

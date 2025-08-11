@@ -87,6 +87,20 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    public ProjectResponse getProjectById(String ownerEmail, Long projectId) {
+        Owner owner = ownerRepository.findByEmail(ownerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Owner not found"));
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+
+        if (!project.getOwner().getId().equals(owner.getId())) {
+            throw new AccessDeniedException("You do not have permission to update this project.");
+        }
+
+        return mapToProjectResponse(project);
+    }
+
     private ProjectResponse mapToProjectResponse(Project project) {
         ProjectResponse response = new ProjectResponse();
         response.setId(project.getId());

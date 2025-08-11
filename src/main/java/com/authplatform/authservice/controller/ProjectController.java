@@ -45,6 +45,16 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
+    @GetMapping("/{projectId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ProjectResponse> getProjectById(
+            @PathVariable Long projectId,
+            Principal principal
+    ) {
+        ProjectResponse project = projectService.getProjectById(principal.getName(), projectId);
+        return ResponseEntity.ok(project);
+    }
+
     @GetMapping("/{projectId}/endusers")
     @PreAuthorize("@permissionService.canManageProject(authentication, #projectId)")
     public ResponseEntity<List<EndUserResponse>> getEndUsersByProject(

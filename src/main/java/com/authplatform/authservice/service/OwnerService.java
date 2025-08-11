@@ -140,6 +140,10 @@ public class OwnerService {
         return mapToOwnerResponse(owner);
     }
 
+    public OwnerResponse validateOwnerToken(String ownerEmail) {
+        return getOwnerProfile(ownerEmail);
+    }
+
     @Transactional
     public void changeOwnerPassword(String ownerEmail, ChangePasswordRequest request) {
         Owner owner = ownerRepository.findByEmail(ownerEmail)

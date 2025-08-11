@@ -43,4 +43,11 @@ public class OwnerController {
         ownerService.changeOwnerPassword(principal.getName(), request);
         return ResponseEntity.ok(new ApiResponse(true, "Password changed successfully."));
     }
+
+    @PostMapping("/me/validate")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<OwnerResponse> validateToken(Principal principal) {
+        OwnerResponse profile = ownerService.validateOwnerToken(principal.getName());
+        return ResponseEntity.ok(profile);
+    }
 }

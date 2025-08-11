@@ -137,7 +137,11 @@ public class OwnerService {
     public OwnerResponse getOwnerProfile(String ownerEmail) {
         Owner owner = ownerRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Owner not found"));
-        return mapToOwnerResponse(owner); // Dùng lại hàm map đã có
+        return mapToOwnerResponse(owner);
+    }
+
+    public OwnerResponse validateOwnerToken(String ownerEmail) {
+        return getOwnerProfile(ownerEmail);
     }
 
     @Transactional

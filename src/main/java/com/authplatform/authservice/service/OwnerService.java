@@ -8,6 +8,7 @@ import com.authplatform.authservice.model.Role;
 import com.authplatform.authservice.repository.OwnerRepository;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.Instant;
@@ -131,6 +132,27 @@ public class OwnerService {
         return ownerRepository.findAll().stream()
                 .map(this::mapToOwnerResponse)
                 .collect(Collectors.toList());
+    }
+
+    public OwnerResponse getOwnerProfile(String ownerEmail) {
+        Owner owner = ownerRepository.findByEmail(ownerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Owner not found"));
+        return mapToOwnerResponse(owner);
+    }
+
+    @Transactional
+    public void changeOwnerPassword(String ownerEmail, ChangePasswordRequest request) {
+        Owner owner = ownerRepository.findByEmail(ownerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Owner not found"));
+
+        // Kiểm tra mật khẩu cũ
+        if (!passwordEncoder.matches(request.getOldPassword(), owner.getPassword())) {
+            throw new BadCredentialsException("Incorrect old password.");
+        }
+
+        owner.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        owner.setPasswordLastChangedAt(Instant.now());
+        ownerRepository.save(owner);
     }
 
     @Transactional

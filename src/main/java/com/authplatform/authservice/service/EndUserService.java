@@ -122,6 +122,18 @@ public class EndUserService {
         endUserRepository.save(endUser);
     }
 
+    public EndUserResponse getEndUserById(Long projectId, Long endUserId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        EndUser endUser = endUserRepository.findById(endUserId)
+                .orElseThrow(() -> new UsernameNotFoundException("EndUser not found"));
+
+        if (!endUser.getProject().getId().equals(project.getId())) {
+            throw new AccessDeniedException("User does not belong to this project.");
+        }
+        return mapToEndUserResponse(endUser);
+    }
+
     public List<EndUserResponse> getUsersByProject(Long projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found."));

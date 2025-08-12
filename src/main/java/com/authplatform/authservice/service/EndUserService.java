@@ -134,6 +134,7 @@ public class EndUserService {
         EndUser endUser = findUserAndVerifyProject(endUserId, projectId);
 
         endUser.setFullName(request.getFullName());
+        endUser.getRoles().size();
         EndUser updatedUser = endUserRepository.save(endUser);
 
         return mapToEndUserResponse(updatedUser);

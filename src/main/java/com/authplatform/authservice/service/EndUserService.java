@@ -307,7 +307,7 @@ public class EndUserService {
 
     // --- CÁC PHƯƠMNG THỨC HỖ TRỢ ---
 
-    private EndUser findUserAndVerifyProject(Long projectId, Long endUserId) {
+    private EndUser findUserAndVerifyProject(Long endUserId, Long projectId) {
         EndUser endUser = endUserRepository.findById(endUserId)
                 .orElseThrow(() -> new UsernameNotFoundException("EndUser not found with id: " + endUserId));
 

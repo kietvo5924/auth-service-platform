@@ -146,12 +146,12 @@ public class EndUserService {
     // Cập nhật fullName enduser dành cho owner
     @Transactional
     public EndUserResponse updateUserDetails(Long projectId, Long endUserId, UpdateEndUserRequest request) {
-        EndUser endUser = findUserAndVerifyProject(endUserId, projectId);
+        EndUser user = findUserAndVerifyProject(endUserId, projectId);
 
-        endUser.setFullName(request.getFullName());
-        EndUser updatedUser = endUserRepository.save(endUser);
+        user.setFullName(request.getFullName());
+        user.getRoles().size();
 
-        return mapToEndUserResponse(updatedUser);
+        return mapToEndUserResponse(user);
     }
 
     // Cập nhật Role cho enduser dành cho owner

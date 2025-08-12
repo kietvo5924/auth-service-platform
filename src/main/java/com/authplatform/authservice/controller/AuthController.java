@@ -6,6 +6,7 @@ import com.authplatform.authservice.service.JwtService;
 import com.authplatform.authservice.service.OwnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,9 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Value("${app.frontend.verify-email-url}")
+    private String verifyEmailUrl;
+
     // --- API ĐĂNG KÝ ---
     @PostMapping("/register")
     public ResponseEntity<OwnerResponse> registerOwner(@Valid @RequestBody RegisterOwnerRequest registerRequest) {
@@ -32,9 +36,13 @@ public class AuthController {
 
     // --- API XÁC THỰC EMAIL ---
     @GetMapping("/verify-email")
-    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("token") String token) {
-        ownerService.verifyEmail(token);
-        return ResponseEntity.ok(new ApiResponse(true, "Email verified successfully!"));
+    public String verifyEmail(@RequestParam("token") String token) {
+        try {
+            ownerService.verifyEmail(token);
+            return "redirect:" + verifyEmailUrl + "?success=true";
+        } catch (Exception e) {
+            return "redirect:" + verifyEmailUrl + "?success=false&error=" + e.getMessage();
+        }
     }
 
     // --- API ĐĂNG NHẬP ---

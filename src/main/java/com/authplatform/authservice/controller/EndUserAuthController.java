@@ -4,6 +4,7 @@ import com.authplatform.authservice.dto.*;
 import com.authplatform.authservice.service.EndUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,9 @@ public class EndUserAuthController {
 
     private final EndUserService endUserService;
 
+    @Value("${app.frontend.verify-email-url}")
+    private String verifyEmailUrl;
+
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> registerEndUser(
             @PathVariable String apiKey,
@@ -25,12 +29,16 @@ public class EndUserAuthController {
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<ApiResponse> verifyEmail(
+    public String verifyEmail(
             @PathVariable String apiKey,
             @RequestParam("token") String token
-    ) {
-        endUserService.verifyEmail(apiKey, token);
-        return ResponseEntity.ok(new ApiResponse(true, "Email verified successfully!"));
+    ) { // Đổi kiểu trả về thành String
+        try {
+            endUserService.verifyEmail(apiKey, token);
+            return "redirect:" + verifyEmailUrl + "?success=true";
+        } catch (Exception e) {
+            return "redirect:" + verifyEmailUrl + "?success=false&error=" + e.getMessage();
+        }
     }
 
     @PostMapping("/login")

@@ -49,18 +49,9 @@ public class OwnerService {
 
         Owner savedOwner = ownerRepository.save(newOwner);
 
-        // Tạo token xác thực email
         String verificationToken = jwtService.generateEmailVerificationToken(savedOwner.getEmail());
+        emailService.sendOwnerVerificationEmail(savedOwner, verificationToken);
 
-        // Gửi email với link trỏ về backend của chúng ta
-        String verificationLink = "https://auth-service-platform.onrender.com/api/platform/auth/verify-email?token=" + verificationToken;
-        String emailBody = "<h1>Cảm ơn bạn đã đăng ký!</h1>"
-                + "<p>Vui lòng nhấp vào link sau để xác thực tài khoản của bạn (link có hiệu lực trong 15 phút):</p>"
-                + "<a href=\"" + verificationLink + "\">Xác thực tài khoản</a>";
-
-        emailService.sendHtmlEmail(savedOwner.getEmail(), "Xác thực tài khoản", emailBody);
-
-        // Trả về thông tin cơ bản, không có token đăng nhập
         return mapToOwnerResponse(savedOwner);
     }
 

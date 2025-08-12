@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -43,7 +40,7 @@ public class EndUserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public EndUser register(String apiKey, EndUserRegisterRequest request) {
+    public void register(String apiKey, EndUserRegisterRequest request) {
         Project project = projectRepository.findByApiKey(apiKey)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found for the given API key."));
 
@@ -59,26 +56,14 @@ public class EndUserService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .project(project)
-                .roles(Set.of(defaultRole))
+                .roles(new HashSet<>(Collections.singletonList(defaultRole)))
                 .emailVerified(false)
                 .build();
 
         EndUser savedUser = endUserRepository.save(newUser);
 
         String verificationToken = jwtService.generateEmailVerificationToken(savedUser.getEmail());
-
-        String verificationLink = String.format(
-                "https://auth-service-platform.onrender.com/api/p/%s/auth/verify-email?token=%s",
-                apiKey,
-                verificationToken
-        );
-
-        String emailBody = "<h1>Chào mừng bạn đến với " + project.getName() + "!</h1>"
-                + "<p>Vui lòng nhấp vào link sau để xác thực tài khoản của bạn (link có hiệu lực trong 15 phút):</p>"
-                + "<a href=\"" + verificationLink + "\">Kích hoạt tài khoản</a>";
-        emailService.sendHtmlEmail(savedUser.getEmail(), "Kích hoạt tài khoản của bạn", emailBody);
-
-        return savedUser;
+        emailService.sendEndUserVerificationEmail(savedUser, verificationToken);
     }
 
     public AuthResponse login(String apiKey, EndUserLoginRequest request) {

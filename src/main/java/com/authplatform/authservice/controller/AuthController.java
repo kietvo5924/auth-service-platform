@@ -25,7 +25,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @Value("${app.frontend.verify-email-url}")
-    private String verifyEmailUrl;
+    private String verifyEmailResultUrl;
 
     // --- API ĐĂNG KÝ ---
     @PostMapping("/register")
@@ -39,9 +39,9 @@ public class AuthController {
     public String verifyEmail(@RequestParam("token") String token) {
         try {
             ownerService.verifyEmail(token);
-            return "redirect:" + verifyEmailUrl + "?success=true";
+            return "redirect:" + verifyEmailResultUrl + "?success=true";
         } catch (Exception e) {
-            return "redirect:" + verifyEmailUrl + "?success=false&error=" + e.getMessage();
+            return "redirect:" + verifyEmailResultUrl + "?success=false&error=" + e.getMessage();
         }
     }
 

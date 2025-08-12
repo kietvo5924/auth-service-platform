@@ -17,7 +17,7 @@ public class EndUserAuthController {
     private final EndUserService endUserService;
 
     @Value("${app.frontend.verify-email-url}")
-    private String verifyEmailUrl;
+    private String verifyEmailResultUrl;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> registerEndUser(
@@ -32,12 +32,12 @@ public class EndUserAuthController {
     public String verifyEmail(
             @PathVariable String apiKey,
             @RequestParam("token") String token
-    ) { // Đổi kiểu trả về thành String
+    ) {
         try {
             endUserService.verifyEmail(apiKey, token);
-            return "redirect:" + verifyEmailUrl + "?success=true";
+            return "redirect:" + verifyEmailResultUrl + "?success=true";
         } catch (Exception e) {
-            return "redirect:" + verifyEmailUrl + "?success=false&error=" + e.getMessage();
+            return "redirect:" + verifyEmailResultUrl + "?success=false&error=" + e.getMessage();
         }
     }
 

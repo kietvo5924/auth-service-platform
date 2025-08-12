@@ -146,12 +146,12 @@ public class EndUserService {
     // Cập nhật fullName enduser dành cho owner
     @Transactional
     public EndUserResponse updateUserDetails(Long projectId, Long endUserId, UpdateEndUserRequest request) {
-        EndUser user = findUserAndVerifyProject(endUserId, projectId);
+        EndUser endUser = findUserAndVerifyProject(endUserId, projectId);
 
-        user.setFullName(request.getFullName());
-        user.getRoles().size();
+        endUser.setFullName(request.getFullName());
+        EndUser updatedUser = endUserRepository.save(endUser);
 
-        return mapToEndUserResponse(user);
+        return mapToEndUserResponse(updatedUser);
     }
 
     // Cập nhật Role cho enduser dành cho owner
@@ -255,8 +255,8 @@ public class EndUserService {
         otpCache.put(endUser.getEmail(), otp);
 
         String emailBody = "<h1>Yêu cầu đặt lại mật khẩu cho " + project.getName() + "</h1>"
-                        + "<p>Mã OTP của bạn là: <b>" + otp + "</b></p>"
-                        + "<p>Mã này sẽ hết hạn sau 5 phút.</p>";
+                + "<p>Mã OTP của bạn là: <b>" + otp + "</b></p>"
+                + "<p>Mã này sẽ hết hạn sau 5 phút.</p>";
         emailService.sendHtmlEmail(endUser.getEmail(), "Mã OTP đặt lại mật khẩu", emailBody);
     }
 

@@ -29,15 +29,15 @@ public class EndUserAuthController {
     }
 
     @GetMapping("/verify-email")
-    public String verifyEmail(
+    public ResponseEntity<ApiResponse> verifyEmail(
             @PathVariable String apiKey,
             @RequestParam("token") String token
     ) {
         try {
             endUserService.verifyEmail(apiKey, token);
-            return "redirect:" + verifyEmailResultUrl + "?success=true";
+            return ResponseEntity.ok(new ApiResponse(true, "Email verified successfully!"));
         } catch (Exception e) {
-            return "redirect:" + verifyEmailResultUrl + "?success=false&error=" + e.getMessage();
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }
     }
 

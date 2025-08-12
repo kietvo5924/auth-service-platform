@@ -36,12 +36,12 @@ public class AuthController {
 
     // --- API XÁC THỰC EMAIL ---
     @GetMapping("/verify-email")
-    public String verifyEmail(@RequestParam("token") String token) {
+    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("token") String token) {
         try {
             ownerService.verifyEmail(token);
-            return "redirect:" + verifyEmailResultUrl + "?success=true";
+            return ResponseEntity.ok(new ApiResponse(true, "Email verified successfully!"));
         } catch (Exception e) {
-            return "redirect:" + verifyEmailResultUrl + "?success=false&error=" + e.getMessage();
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }
     }
 

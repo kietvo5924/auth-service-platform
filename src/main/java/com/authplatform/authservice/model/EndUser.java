@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "end_users")
+@Table(name = "end_users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"email", "project_id"})
+})
 public class EndUser implements UserDetails {
 
     @Id

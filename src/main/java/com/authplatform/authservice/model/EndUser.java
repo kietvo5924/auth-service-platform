@@ -37,7 +37,7 @@ public class EndUser implements UserDetails {
     private boolean emailVerified = false;
     private boolean locked = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 

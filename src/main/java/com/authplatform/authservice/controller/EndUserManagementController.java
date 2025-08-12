@@ -1,9 +1,6 @@
 package com.authplatform.authservice.controller;
 
-import com.authplatform.authservice.dto.ApiResponse;
-import com.authplatform.authservice.dto.EndUserResponse;
-import com.authplatform.authservice.dto.UpdateEndUserRequest;
-import com.authplatform.authservice.dto.UpdateEndUserRolesRequest;
+import com.authplatform.authservice.dto.*;
 import com.authplatform.authservice.service.EndUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,26 +17,14 @@ public class EndUserManagementController {
 
     private final EndUserService endUserService;
 
-    // Sửa thông tin fullName
     @PutMapping("/{endUserId}")
     @PreAuthorize("@permissionService.canManageProject(authentication, #projectId)")
-    public ResponseEntity<EndUserResponse> updateUserDetails(
+    public ResponseEntity<EndUserResponse> updateEndUser(
             @PathVariable Long projectId,
             @PathVariable Long endUserId,
-            @Valid @RequestBody UpdateEndUserRequest request
+            @Valid @RequestBody AdminUpdateEndUserRequest request // <-- Dùng DTO mới
     ) {
-        EndUserResponse updatedUser = endUserService.updateUserDetails(projectId, endUserId, request);
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    @PutMapping("/{endUserId}/roles")
-    @PreAuthorize("@permissionService.canManageProject(authentication, #projectId)")
-    public ResponseEntity<EndUserResponse> updateUserRoles(
-            @PathVariable Long projectId,
-            @PathVariable Long endUserId,
-            @Valid @RequestBody UpdateEndUserRolesRequest request
-    ) {
-        EndUserResponse updatedUser = endUserService.updateUserRoles(projectId, endUserId, request);
+        EndUserResponse updatedUser = endUserService.adminUpdateEndUser(projectId, endUserId, request);
         return ResponseEntity.ok(updatedUser);
     }
 

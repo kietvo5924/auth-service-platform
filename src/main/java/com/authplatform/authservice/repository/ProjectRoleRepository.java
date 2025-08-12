@@ -13,4 +13,5 @@ public interface ProjectRoleRepository extends JpaRepository<ProjectRole, Long> 
     Optional<ProjectRole> findByNameAndProject(String name, Project project);
     List<ProjectRole> findByProject(Project project);
     boolean existsByNameAndProject(String name, Project project);
+    Optional<ProjectRole> findByIdAndProject(Long id, Project project);
 }

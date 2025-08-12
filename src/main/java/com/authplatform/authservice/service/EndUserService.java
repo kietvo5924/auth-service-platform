@@ -128,34 +128,26 @@ public class EndUserService {
                 .collect(Collectors.toList());
     }
 
-    // Cập nhật fullName enduser dành cho owner
+    // Cập nhật fullName enduser và roles dành cho owner
     @Transactional
-    public EndUserResponse updateUserDetails(Long projectId, Long endUserId, UpdateEndUserRequest request) {
-        EndUser endUser = findUserAndVerifyProject(endUserId, projectId);
+    public EndUserResponse adminUpdateEndUser(Long projectId, Long endUserId, AdminUpdateEndUserRequest request) {
+        EndUser user = findUserAndVerifyProject(endUserId, projectId);
 
-        endUser.setFullName(request.getFullName());
-        EndUser updatedUser = endUserRepository.save(endUser);
-
-        return mapToEndUserResponse(updatedUser);
-    }
-
-    // Cập nhật Role cho enduser dành cho owner
-    @Transactional
-    public EndUserResponse updateUserRoles(Long projectId, Long endUserId, UpdateEndUserRolesRequest request) {
-        EndUser endUser = findUserAndVerifyProject(endUserId, projectId);
-
-        List<ProjectRole> rolesToAssign = projectRoleRepository.findAllById(request.getRoleIds());
-
-        for (ProjectRole role : rolesToAssign) {
-            if (!role.getProject().getId().equals(projectId)) {
-                throw new AccessDeniedException("Cannot assign role from a different project.");
-            }
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
         }
 
-        endUser.setRoles(new HashSet<>(rolesToAssign));
-        EndUser updatedUser = endUserRepository.save(endUser);
+        if (request.getRoleIds() != null) {
+            Project project = projectRepository.findById(projectId).get();
+            Set<ProjectRole> newRoles = request.getRoleIds().stream()
+                    .map(roleId -> projectRoleRepository.findByIdAndProject(roleId, project)
+                            .orElseThrow(() -> new IllegalArgumentException("Role not found with id: " + roleId)))
+                    .collect(Collectors.toSet());
+            user.setRoles(newRoles);
+        }
 
-        return mapToEndUserResponse(updatedUser);
+        // Không cần gọi save() vì @Transactional sẽ tự động lưu
+        return mapToEndUserResponse(user);
     }
 
     @Transactional
